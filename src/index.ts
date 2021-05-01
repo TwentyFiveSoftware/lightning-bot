@@ -1,10 +1,11 @@
 import { Client } from 'discord.js';
 import dotenv from 'dotenv';
+import { registerEvents } from './eventHandler';
 
 dotenv.config();
 
 const client = new Client();
 
-client.on('ready', () => console.log('[STATUS] Bot is ready'));
+registerEvents(client);
 
 client.login(process.env['TOKEN']);
