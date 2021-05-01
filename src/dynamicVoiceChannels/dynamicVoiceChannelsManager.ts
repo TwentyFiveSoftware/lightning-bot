@@ -1,9 +1,9 @@
-import type { Client } from 'discord.js';
+import type { Client, Message } from 'discord.js';
 import sqlite from 'better-sqlite3';
-import onChannelCreate from './onChannelCreate';
+import config from '../config';
 import onChannelDelete from './onChannelDelete';
-import onChannelUpdate from './onChannelUpdate';
 import onVoiceStateUpdate from './onVoiceStateUpdate';
+import cmdCreateChannel from './cmdCreateChannel';
 
 const register = (client: Client): void => {
     const database = sqlite('./db/dynamicVoiceChannels.db');
@@ -30,10 +30,23 @@ const register = (client: Client): void => {
         )
         .run();
 
-    onChannelCreate.registerEvent(client, database);
     onChannelDelete.registerEvent(client, database);
-    onChannelUpdate.registerEvent(client, database);
     onVoiceStateUpdate.registerEvent(client, database);
+
+    client.on('message', async (message: Message) => {
+        if (!message.content.toLowerCase().startsWith(config.commandPrefix) || message.author.bot) return;
+
+        const args = message.content.trim().split(/ +/).slice(1);
+        if (args.length === 0) return;
+
+        const command = (args.shift() ?? '').toLowerCase();
+
+        if (command === config.joinToCreate.command.toLowerCase()) {
+            await cmdCreateChannel.registerCommand(message, database);
+        }
+
+        await message.delete();
+    });
 };
 
 export default register;

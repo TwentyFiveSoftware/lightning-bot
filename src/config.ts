@@ -1,6 +1,8 @@
 export default {
+    commandPrefix: '::lightning',
     joinToCreate: {
-        joinToCreateChannelName: 'Join To Create',
+        command: 'jointocreate',
+        defaultChannelName: 'Join To Create',
         tempChannelName: 'temp channel',
     },
 };
