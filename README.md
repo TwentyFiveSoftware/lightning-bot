@@ -1,6 +1,6 @@
 # Lightning Bot
 
-This is a multipurpose discord bot using discord.js with TypeScript.
+This is a multipurpose discord bot using [discord.js](https://discord.js.org/) with TypeScript. The bot is deployed on [Heroku](https://www.heroku.com/) and stores its data in an Heroku Postgres database.
 
 ### Features
 
