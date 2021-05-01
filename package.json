@@ -10,13 +10,13 @@
         "node": "14.15.4"
     },
     "dependencies": {
-        "better-sqlite3": "^7.1.5",
         "discord.js": "^12.5.3",
-        "dotenv": "^8.2.0"
+        "dotenv": "^8.2.0",
+        "pg": "^8.6.0"
     },
     "devDependencies": {
-        "@types/better-sqlite3": "^5.4.1",
         "@types/node": "^15.0.1",
+        "@types/pg": "^7.14.11",
         "@typescript-eslint/eslint-plugin": "^4.22.0",
         "@typescript-eslint/parser": "^4.22.0",
         "eslint": "^7.25.0",

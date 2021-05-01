@@ -1,11 +1,9 @@
 import { Client } from 'discord.js';
 import dotenv from 'dotenv';
-import { registerModules } from './registerModules';
-import fs from 'fs';
 import http from 'http';
+import { registerModules } from './registerModules';
 
 dotenv.config();
-if (!fs.existsSync('db')) fs.mkdirSync('db');
 
 const client = new Client();
 

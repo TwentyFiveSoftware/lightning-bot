@@ -1,23 +1,18 @@
 import type { Channel, Client, VoiceChannel } from 'discord.js';
-import type { Database } from 'better-sqlite3';
+import pg from 'pg';
 
-const handle = async (database: Database, channel: Channel): Promise<void> => {
+const handle = async (database: pg.Client, channel: Channel): Promise<void> => {
     if (channel.type !== 'voice') return;
 
     const voiceChannel = channel as VoiceChannel;
 
-    const row = database
-        .prepare('SELECT * FROM joinToCreateChannels WHERE guildId = ? AND channelId = ?')
-        .get(voiceChannel.guild.id, voiceChannel.id);
-
-    if (!row) return;
-
-    database
-        .prepare('DELETE FROM joinToCreateChannels WHERE guildId = ? AND channelId = ?')
-        .run(voiceChannel.guild.id, voiceChannel.id);
+    await database.query('DELETE FROM join_to_create_channels WHERE guild_id = $1 AND channel_id = $2', [
+        voiceChannel.guild.id,
+        voiceChannel.id,
+    ]);
 };
 
-const registerEvent = (client: Client, database: Database): void => {
+const registerEvent = (client: Client, database: pg.Client): void => {
     client.on('channelDelete', (...args) => handle(database, ...args));
 };
 

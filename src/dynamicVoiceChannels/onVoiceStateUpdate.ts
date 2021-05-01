@@ -1,38 +1,45 @@
 import type { Client, GuildMember, VoiceChannel, VoiceState } from 'discord.js';
-import type { Database } from 'better-sqlite3';
+import pg from 'pg';
 import config from '../config';
 
-const handle = async (database: Database, oldState: VoiceState, newState: VoiceState): Promise<void> => {
+const handle = async (database: pg.Client, oldState: VoiceState, newState: VoiceState): Promise<void> => {
     if (oldState.channel) await deleteChannel(oldState.channel, database);
     if (newState.channel) await createChannel(newState.channel, newState.member, database);
 };
 
-const deleteChannel = async (leftChannel: VoiceChannel, database: Database) => {
-    if (leftChannel.members.size > 0) return;
+const deleteChannel = async (tempChannel: VoiceChannel, database: pg.Client) => {
+    if (tempChannel.members.size > 0) return;
 
-    const row = database
-        .prepare('SELECT * FROM dynamicVoiceChannels WHERE guildId = ? AND channelId = ?')
-        .get(leftChannel.guild.id, leftChannel.id);
+    const {
+        rows,
+    } = await database.query('SELECT * FROM dynamic_voice_channels WHERE guild_id = $1 AND channel_id = $2', [
+        tempChannel.guild.id,
+        tempChannel.id,
+    ]);
 
-    if (!row) return;
+    if (rows.length === 0) return;
 
-    database
-        .prepare('DELETE FROM dynamicVoiceChannels WHERE guildId = ? AND channelId = ?')
-        .run(leftChannel.guild.id, leftChannel.id);
+    await database.query('DELETE FROM dynamic_voice_channels WHERE guild_id = $1 AND channel_id = $2', [
+        tempChannel.guild.id,
+        tempChannel.id,
+    ]);
 
-    await leftChannel.delete();
+    await tempChannel.delete();
 };
 
 const createChannel = async (
     joinedChannel: VoiceChannel,
     member: GuildMember | null,
-    database: Database,
+    database: pg.Client,
 ): Promise<void> => {
-    const row = database
-        .prepare('SELECT * FROM joinToCreateChannels WHERE guildId = ? AND channelId = ?')
-        .get(joinedChannel.guild.id, joinedChannel.id);
+    const {
+        rows,
+    } = await database.query('SELECT * FROM join_to_create_channels WHERE guild_id = $1 AND channel_id = $2', [
+        joinedChannel.guild.id,
+        joinedChannel.id,
+    ]);
 
-    if (!row) return;
+    if (rows.length === 0) return;
 
     const createdChannel = await joinedChannel.guild.channels.create(config.joinToCreate.tempChannelName, {
         type: 'voice',
@@ -41,10 +48,13 @@ const createChannel = async (
 
     await member?.voice.setChannel(createdChannel);
 
-    database.prepare('INSERT INTO dynamicVoiceChannels VALUES (?, ?)').run(createdChannel.guild.id, createdChannel.id);
+    await database.query('INSERT INTO dynamic_voice_channels VALUES ($1, $2)', [
+        createdChannel.guild.id,
+        createdChannel.id,
+    ]);
 };
 
-const registerEvent = (client: Client, database: Database): void => {
+const registerEvent = (client: Client, database: pg.Client): void => {
     client.on('voiceStateUpdate', (...args) => handle(database, ...args));
 };
 

@@ -1,34 +1,33 @@
 import type { Client, Message } from 'discord.js';
-import sqlite from 'better-sqlite3';
+import pg from 'pg';
 import config from '../config';
 import onChannelDelete from './onChannelDelete';
 import onVoiceStateUpdate from './onVoiceStateUpdate';
 import cmdCreateChannel from './cmdCreateChannel';
 
-const register = (client: Client): void => {
-    const database = sqlite('./db/dynamicVoiceChannels.db');
+const register = async (client: Client): Promise<void> => {
+    const database = new pg.Client({
+        connectionString: process.env['DATABASE_URL'],
+        ssl: {
+            rejectUnauthorized: false,
+        },
+    });
 
-    database
-        .prepare(
-            `
-                CREATE TABLE IF NOT EXISTS joinToCreateChannels(
-                    guildId VARCHAR,
-                    channelId VARCHAR 
-                );
-            `,
-        )
-        .run();
+    await database.connect();
 
-    database
-        .prepare(
-            `
-                CREATE TABLE IF NOT EXISTS dynamicVoiceChannels(
-                    guildId VARCHAR,
-                    channelId VARCHAR 
-                );
-            `,
-        )
-        .run();
+    await database.query(`
+        CREATE TABLE IF NOT EXISTS join_to_create_channels(
+            guild_id VARCHAR,
+            channel_id VARCHAR 
+        );
+    `);
+
+    await database.query(`
+        CREATE TABLE IF NOT EXISTS dynamic_voice_channels(
+            guild_id VARCHAR,
+            channel_id VARCHAR 
+        );
+    `);
 
     onChannelDelete.registerEvent(client, database);
     onVoiceStateUpdate.registerEvent(client, database);
@@ -45,7 +44,9 @@ const register = (client: Client): void => {
             await cmdCreateChannel.registerCommand(message, database);
         }
 
-        await message.delete();
+        try {
+            await message.delete();
+        } catch (_e) {}
     });
 };
 
