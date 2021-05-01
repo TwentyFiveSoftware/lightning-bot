@@ -6,14 +6,27 @@ import onVoiceStateUpdate from './onVoiceStateUpdate';
 const register = (client: Client): void => {
     const database = sqlite('./db/dynamicVoiceChannels.db');
 
-    const createTableSql = `
-        CREATE TABLE IF NOT EXISTS joinToCreateChannels(
-            guildId VARCHAR,
-            channelId VARCHAR 
+    database
+        .prepare(
+            `
+                CREATE TABLE IF NOT EXISTS joinToCreateChannels(
+                    guildId VARCHAR,
+                    channelId VARCHAR 
+                );
+            `,
         )
-    `;
+        .run();
 
-    database.prepare(createTableSql).run();
+    database
+        .prepare(
+            `
+                CREATE TABLE IF NOT EXISTS dynamicVoiceChannels(
+                    guildId VARCHAR,
+                    channelId VARCHAR 
+                );
+            `,
+        )
+        .run();
 
     onChannelCreate.registerEvent(client, database);
     onVoiceStateUpdate.registerEvent(client, database);
