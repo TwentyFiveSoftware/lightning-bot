@@ -1,0 +1,17 @@
+{
+    "name": "lightning-bot",
+    "version": "1.0.0",
+    "scripts": {
+        "start": "nodemon",
+        "build": "tsc"
+    },
+    "dependencies": {
+        "discord.js": "^12.5.3"
+    },
+    "devDependencies": {
+        "@types/node": "^15.0.1",
+        "nodemon": "^2.0.7",
+        "ts-node": "^9.1.1",
+        "typescript": "^4.2.4"
+    }
+}
