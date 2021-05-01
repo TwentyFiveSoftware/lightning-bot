@@ -2,8 +2,12 @@
     "name": "lightning-bot",
     "version": "1.0.0",
     "scripts": {
-        "start": "nodemon",
-        "build": "tsc"
+        "start": "node dist/index.js",
+        "postinstall": "tsc",
+        "dev": "nodemon"
+    },
+    "engines": {
+        "node": "14.15.4"
     },
     "dependencies": {
         "better-sqlite3": "^7.1.5",
