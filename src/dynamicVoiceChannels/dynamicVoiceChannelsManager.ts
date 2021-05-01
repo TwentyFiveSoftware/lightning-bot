@@ -1,6 +1,8 @@
 import type { Client } from 'discord.js';
 import sqlite from 'better-sqlite3';
 import onChannelCreate from './onChannelCreate';
+import onChannelDelete from './onChannelDelete';
+import onChannelUpdate from './onChannelUpdate';
 import onVoiceStateUpdate from './onVoiceStateUpdate';
 
 const register = (client: Client): void => {
@@ -29,6 +31,8 @@ const register = (client: Client): void => {
         .run();
 
     onChannelCreate.registerEvent(client, database);
+    onChannelDelete.registerEvent(client, database);
+    onChannelUpdate.registerEvent(client, database);
     onVoiceStateUpdate.registerEvent(client, database);
 };
 

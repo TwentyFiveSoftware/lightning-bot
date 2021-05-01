@@ -8,8 +8,6 @@ const handle = (_client: Client, database: Database, channel: Channel): void => 
     const voiceChannel = channel as VoiceChannel;
     if (voiceChannel.name !== config.joinToCreate.joinToCreateChannelName) return;
 
-    console.log(voiceChannel.id);
-
     database.prepare('INSERT INTO joinToCreateChannels VALUES (?, ?)').run(voiceChannel.guild.id, voiceChannel.id);
 };
 
