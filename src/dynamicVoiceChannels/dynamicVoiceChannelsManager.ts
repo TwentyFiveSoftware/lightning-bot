@@ -1,6 +1,7 @@
 import type { Client, Message } from 'discord.js';
 import pg from 'pg';
 import config from '../config';
+import { SQL_CREATE_TABLE_DVC, SQL_CREATE_TABLE_JTC } from './databaseQueries';
 import onChannelDelete from './onChannelDelete';
 import onVoiceStateUpdate from './onVoiceStateUpdate';
 import cmdCreateChannel from './cmdCreateChannel';
@@ -8,26 +9,13 @@ import cmdCreateChannel from './cmdCreateChannel';
 const register = async (client: Client): Promise<void> => {
     const database = new pg.Client({
         connectionString: process.env['DATABASE_URL'],
-        ssl: {
-            rejectUnauthorized: false,
-        },
+        ssl: { rejectUnauthorized: false },
     });
 
     await database.connect();
 
-    await database.query(`
-        CREATE TABLE IF NOT EXISTS join_to_create_channels(
-            guild_id VARCHAR,
-            channel_id VARCHAR 
-        );
-    `);
-
-    await database.query(`
-        CREATE TABLE IF NOT EXISTS dynamic_voice_channels(
-            guild_id VARCHAR,
-            channel_id VARCHAR 
-        );
-    `);
+    await database.query(SQL_CREATE_TABLE_JTC);
+    await database.query(SQL_CREATE_TABLE_DVC);
 
     onChannelDelete.registerEvent(client, database);
     onVoiceStateUpdate.registerEvent(client, database);
@@ -43,10 +31,6 @@ const register = async (client: Client): Promise<void> => {
         if (command === config.joinToCreate.command.toLowerCase()) {
             await cmdCreateChannel.registerCommand(message, database);
         }
-
-        try {
-            await message.delete();
-        } catch (_e) {}
     });
 };
 
