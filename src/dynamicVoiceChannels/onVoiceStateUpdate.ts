@@ -19,7 +19,7 @@ const deleteChannel = async (tempChannel: VoiceChannel, database: pg.Client) => 
 
 const createChannel = async (newVoiceState: VoiceState, database: pg.Client): Promise<void> => {
     const joinedChannel = newVoiceState.channel;
-    if (!joinedChannel) return;
+    if (!joinedChannel || !newVoiceState.member) return;
 
     const { rows } = await database.query(SQL_SELECT_JTC, [joinedChannel.guild.id, joinedChannel.id]);
     if (rows.length === 0) return;
@@ -32,6 +32,9 @@ const createChannel = async (newVoiceState: VoiceState, database: pg.Client): Pr
     await newVoiceState.member?.voice.setChannel(createdChannel);
 
     await database.query(SQL_INSERT_DVC, [createdChannel.guild.id, createdChannel.id]);
+
+    await createdChannel.lockPermissions();
+    await createdChannel.createOverwrite(newVoiceState.member.id, { MANAGE_CHANNELS: true });
 };
 
 const registerEvent = (client: Client, database: pg.Client): void => {
