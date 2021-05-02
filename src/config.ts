@@ -3,6 +3,6 @@ export default {
     joinToCreate: {
         command: 'jointocreate',
         defaultChannelName: 'Join To Create',
-        tempChannelName: 'Τανεrnε',
+        tempChannelName: 'ROOM',
     },
 };

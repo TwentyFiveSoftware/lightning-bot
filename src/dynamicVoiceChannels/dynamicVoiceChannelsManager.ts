@@ -30,7 +30,7 @@ const register = async (client: Client): Promise<void> => {
 
         if (command === config.joinToCreate.command.toLowerCase()) {
             if (message.member?.hasPermission('ADMINISTRATOR'))
-                await cmdCreateChannel.registerCommand(message, database);
+                await cmdCreateChannel.registerCommand(message, database, args);
         }
     });
 };

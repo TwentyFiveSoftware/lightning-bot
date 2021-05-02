@@ -1,6 +1,5 @@
 import type { Client, VoiceChannel, VoiceState } from 'discord.js';
 import pg from 'pg';
-import config from '../config';
 import { SQL_DELETE_DVC, SQL_INSERT_DVC, SQL_SELECT_DVC, SQL_SELECT_JTC } from './databaseQueries';
 
 const handle = async (database: pg.Client, oldState: VoiceState, newState: VoiceState): Promise<void> => {
@@ -25,7 +24,7 @@ const createChannel = async (newVoiceState: VoiceState, database: pg.Client): Pr
     const { rows } = await database.query(SQL_SELECT_JTC, [joinedChannel.guild.id, joinedChannel.id]);
     if (rows.length === 0) return;
 
-    const createdChannel = await joinedChannel.guild.channels.create(config.joinToCreate.tempChannelName, {
+    const createdChannel = await joinedChannel.guild.channels.create(rows[0]['temp_channel_name'], {
         type: 'voice',
         parent: joinedChannel.parent ?? undefined,
     });
