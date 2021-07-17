@@ -7,23 +7,23 @@
         "dev": "nodemon"
     },
     "engines": {
-        "node": "14.15.4"
+        "node": "14.17.3"
     },
     "dependencies": {
-        "discord.js": "^12.5.3",
-        "dotenv": "^8.2.0",
+        "discord.js": "master",
+        "dotenv": "^10.0.0",
         "pg": "^8.6.0"
     },
     "devDependencies": {
-        "@types/node": "^15.0.1",
-        "@types/pg": "^7.14.11",
-        "@typescript-eslint/eslint-plugin": "^4.22.0",
-        "@typescript-eslint/parser": "^4.22.0",
-        "eslint": "^7.25.0",
+        "@types/node": "^16.3.3",
+        "@types/pg": "^8.6.1",
+        "@typescript-eslint/eslint-plugin": "^4.28.3",
+        "@typescript-eslint/parser": "^4.28.3",
+        "eslint": "^7.30.0",
         "eslint-config-prettier": "^8.3.0",
-        "nodemon": "^2.0.7",
-        "prettier": "^2.2.1",
-        "ts-node": "^9.1.1",
-        "typescript": "^4.2.4"
+        "nodemon": "^2.0.12",
+        "prettier": "^2.3.2",
+        "ts-node": "^10.1.0",
+        "typescript": "^4.3.5"
     }
 }
