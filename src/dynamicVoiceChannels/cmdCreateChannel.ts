@@ -1,9 +1,9 @@
 import type { Message } from 'discord.js';
-import pg from 'pg';
 import config from '../config';
+import { database } from '../database';
 import { SQL_INSERT_JTC } from './databaseQueries';
 
-const registerCommand = async (message: Message, database: pg.Client, args: string[]): Promise<void> => {
+const registerCommand = async (message: Message, args: string[]): Promise<void> => {
     const channel = await message.guild?.channels.create(config.joinToCreate.defaultChannelName, { type: 'voice' });
     if (!channel) return;
 

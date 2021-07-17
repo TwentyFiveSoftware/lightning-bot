@@ -1,13 +1,15 @@
 import type { Client, VoiceChannel, VoiceState } from 'discord.js';
-import pg from 'pg';
+import { database } from '../database';
 import { SQL_DELETE_DVC, SQL_INSERT_DVC, SQL_SELECT_DVC, SQL_SELECT_JTC } from './databaseQueries';
 
-const handle = async (database: pg.Client, oldState: VoiceState, newState: VoiceState): Promise<void> => {
-    if (oldState.channel) await deleteChannel(oldState.channel, database);
-    if (newState.channel) await createChannel(newState, database);
+const registerEvent = (client: Client): void => {
+    client.on('voiceStateUpdate', async (oldState: VoiceState, newState: VoiceState) => {
+        if (oldState.channel) await deleteChannel(oldState.channel);
+        if (newState.channel) await createChannel(newState);
+    });
 };
 
-const deleteChannel = async (tempChannel: VoiceChannel, database: pg.Client) => {
+const deleteChannel = async (tempChannel: VoiceChannel) => {
     if (tempChannel.members.size > 0) return;
 
     const { rows } = await database.query(SQL_SELECT_DVC, [tempChannel.guild.id, tempChannel.id]);
@@ -17,7 +19,7 @@ const deleteChannel = async (tempChannel: VoiceChannel, database: pg.Client) => 
     await tempChannel.delete();
 };
 
-const createChannel = async (newVoiceState: VoiceState, database: pg.Client): Promise<void> => {
+const createChannel = async (newVoiceState: VoiceState): Promise<void> => {
     const joinedChannel = newVoiceState.channel;
     if (!joinedChannel || !newVoiceState.member) return;
 
@@ -35,10 +37,6 @@ const createChannel = async (newVoiceState: VoiceState, database: pg.Client): Pr
 
     await createdChannel.lockPermissions();
     await createdChannel.createOverwrite(newVoiceState.member.id, { MANAGE_CHANNELS: true });
-};
-
-const registerEvent = (client: Client, database: pg.Client): void => {
-    client.on('voiceStateUpdate', (...args) => handle(database, ...args));
 };
 
 export default { registerEvent };
