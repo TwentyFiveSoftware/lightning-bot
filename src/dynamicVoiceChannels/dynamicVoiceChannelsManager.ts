@@ -1,3 +1,4 @@
+import { Permissions } from 'discord.js';
 import type { Client, Message } from 'discord.js';
 import config from '../config';
 import { database } from '../database';
@@ -15,7 +16,10 @@ const register = async (client: Client): Promise<void> => {
 };
 
 const registerCommands = async (command: string, args: string[], message: Message): Promise<void> => {
-    if (command === config.joinToCreate.command.toLowerCase() && message.member?.hasPermission('ADMINISTRATOR'))
+    if (
+        command === config.joinToCreate.command.toLowerCase() &&
+        message.member?.permissions.has(Permissions.FLAGS.ADMINISTRATOR)
+    )
         await cmdCreateChannel.registerCommand(message, args);
 };
 

@@ -10,7 +10,7 @@
         "node": "14.17.3"
     },
     "dependencies": {
-        "discord.js": "master",
+        "discord.js": "github:discordjs/discord.js",
         "dotenv": "^10.0.0",
         "pg": "^8.6.0"
     },

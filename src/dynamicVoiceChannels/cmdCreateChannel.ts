@@ -4,7 +4,9 @@ import { database } from '../database';
 import { SQL_INSERT_JTC } from './databaseQueries';
 
 const registerCommand = async (message: Message, args: string[]): Promise<void> => {
-    const channel = await message.guild?.channels.create(config.joinToCreate.defaultChannelName, { type: 'voice' });
+    const channel = await message.guild?.channels.create(config.joinToCreate.defaultChannelName, {
+        type: 'GUILD_VOICE',
+    });
     if (!channel) return;
 
     const tempRoomName = args.length === 0 ? config.joinToCreate.tempChannelName : args.join(' ');

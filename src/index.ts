@@ -1,4 +1,4 @@
-import { Client } from 'discord.js';
+import { Client, Intents } from 'discord.js';
 import dotenv from 'dotenv';
 import http from 'http';
 import { registerModules } from './registerModules';
@@ -14,7 +14,10 @@ http.createServer((_req, res) => {
 const main = async () => {
     await connectToDatabase();
 
-    const client = new Client();
+    const client = new Client({
+        intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES],
+    });
+
     await registerModules(client);
     await client.login(process.env['TOKEN']);
 
